@@ -28,6 +28,8 @@ class LArMCParticleParameters : public object_creation::MCParticle::Parameters
 {
 public:
     pandora::InputInt   m_nuanceCode;               ///< The nuance code
+    pandora::InputString m_Process;
+    pandora::InputString m_endProcess;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -51,9 +53,23 @@ public:
      *  @return the nuance code
      */
     int GetNuanceCode() const;
+    /**
+     *  @brief  Get the process
+     *           
+     *  @return process
+     */
+    std::string GetProcess() const;
+    /**
+     *  @brief  Get the end process
+     *                      
+     *  @return end process
+     */
+    std::string GetEndProcess() const;
 
 private:
     int                 m_nuanceCode;               ///< The nuance code
+    std::string         m_Process;
+    std::string         m_endProcess;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -101,7 +117,9 @@ public:
 
 inline LArMCParticle::LArMCParticle(const LArMCParticleParameters &parameters) :
     object_creation::MCParticle::Object(parameters),
-    m_nuanceCode(parameters.m_nuanceCode.Get())
+    m_nuanceCode(parameters.m_nuanceCode.Get()),
+    m_Process(parameters.m_Process.Get()),
+    m_endProcess(parameters.m_endProcess.Get())
 {
 }
 
@@ -113,6 +131,17 @@ inline int LArMCParticle::GetNuanceCode() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
+
+inline std::string LArMCParticle::GetProcess() const
+{
+    return m_Process;
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+inline std::string LArMCParticle::GetEndProcess() const
+{
+    return m_endProcess;
+}
 //------------------------------------------------------------------------------------------------------------------------------------------
 
 inline LArMCParticleFactory::Parameters *LArMCParticleFactory::NewParameters() const
@@ -136,16 +165,22 @@ inline pandora::StatusCode LArMCParticleFactory::Read(Parameters &parameters, pa
 {
     // ATTN: To receive this call-back must have already set file reader mc particle factory to this factory
     int nuanceCode(0);
+    std::string Process;
+    std::string endProcess;
 
     if (pandora::BINARY == fileReader.GetFileType())
     {
         pandora::BinaryFileReader &binaryFileReader(dynamic_cast<pandora::BinaryFileReader&>(fileReader));
         PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(nuanceCode));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(Process));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileReader.ReadVariable(endProcess));
     }
     else if (pandora::XML == fileReader.GetFileType())
     {
         pandora::XmlFileReader &xmlFileReader(dynamic_cast<pandora::XmlFileReader&>(fileReader));
         PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("NuanceCode", nuanceCode));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("Process", Process));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileReader.ReadVariable("endProcess", endProcess));
     }
     else
     {
@@ -154,6 +189,8 @@ inline pandora::StatusCode LArMCParticleFactory::Read(Parameters &parameters, pa
 
     LArMCParticleParameters &larMCParticleParameters(dynamic_cast<LArMCParticleParameters&>(parameters));
     larMCParticleParameters.m_nuanceCode = nuanceCode;
+    larMCParticleParameters.m_Process = Process;
+    larMCParticleParameters.m_endProcess = endProcess;
 
     return pandora::STATUS_CODE_SUCCESS;
 }
@@ -172,11 +209,16 @@ inline pandora::StatusCode LArMCParticleFactory::Write(const Object *const pObje
     {
         pandora::BinaryFileWriter &binaryFileWriter(dynamic_cast<pandora::BinaryFileWriter&>(fileWriter));
         PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileWriter.WriteVariable(pLArMCParticle->GetNuanceCode()));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileWriter.WriteVariable(pLArMCParticle->GetProcess()));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, binaryFileWriter.WriteVariable(pLArMCParticle->GetEndProcess()));
+
     }
     else if (pandora::XML == fileWriter.GetFileType())
     {
         pandora::XmlFileWriter &xmlFileWriter(dynamic_cast<pandora::XmlFileWriter&>(fileWriter));
         PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileWriter.WriteVariable("NuanceCode", pLArMCParticle->GetNuanceCode()));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileWriter.WriteVariable("Process", pLArMCParticle->GetProcess()));
+        PANDORA_RETURN_RESULT_IF(pandora::STATUS_CODE_SUCCESS, !=, xmlFileWriter.WriteVariable("endProcess", pLArMCParticle->GetEndProcess()));
     }
     else
     {

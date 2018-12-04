@@ -656,12 +656,15 @@ StatusCode MasterAlgorithm::Copy(const Pandora *const pPandora, const MCParticle
     }
 
     parameters.m_nuanceCode = pLArMCParticle->GetNuanceCode();
+    parameters.m_Process = pLArMCParticle->GetProcess();
+    parameters.m_endProcess = pLArMCParticle->GetEndProcess();
     parameters.m_energy = pMCParticle->GetEnergy();
     parameters.m_momentum = pMCParticle->GetMomentum();
     parameters.m_vertex = pMCParticle->GetVertex();
     parameters.m_endpoint = pMCParticle->GetEndpoint();
     parameters.m_particleId = pMCParticle->GetParticleId();
     parameters.m_mcParticleType = pMCParticle->GetMCParticleType();
+   
     // ATTN Parent of mc particle in worker is corresponding mc particle in master
     parameters.m_pParentAddress = static_cast<const void*>(pMCParticle);
     PANDORA_RETURN_RESULT_IF(STATUS_CODE_SUCCESS, !=, PandoraApi::MCParticle::Create(*pPandora, parameters, *pMCParticleFactory));
