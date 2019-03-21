@@ -71,6 +71,11 @@ public:
     static bool IsBeamNeutrinoFinalState(const pandora::MCParticle *const pMCParticle);
 
     /**
+     *  @brief  Returns true if triggered test beam or primary daughter MCParticle
+     */
+    static bool IsTestBeamFinalState(const pandora::MCParticle *const pMCParticle);
+
+    /**
      *  @brief  Returns true if passed a primary beam MCParticle
      */
     static bool IsBeamParticle(const pandora::MCParticle *const pMCParticle);

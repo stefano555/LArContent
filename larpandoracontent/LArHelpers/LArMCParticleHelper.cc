@@ -49,6 +49,20 @@ bool LArMCParticleHelper::IsBeamNeutrinoFinalState(const MCParticle *const pMCPa
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
+bool LArMCParticleHelper::IsTestBeamFinalState(const pandora::MCParticle *const pMCParticle)
+{
+    const int nuance(LArMCParticleHelper::GetNuanceCode(pMCParticle));
+    const bool isParent(LArMCParticleHelper::IsPrimary(pMCParticle) && (nuance == 2001));
+
+    const MCParticle *const pParentMCParticle(LArMCParticleHelper::GetParentMCParticle(pMCParticle));
+    const int parentNuance(LArMCParticleHelper::GetNuanceCode(pParentMCParticle));
+    const bool isDaughter(!pParentMCParticle->GetParentList.empty() && (parentNuance == 2001));
+
+    return (isParent || isDaughter);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
 bool LArMCParticleHelper::IsBeamParticle(const MCParticle *const pMCParticle)
 {
     const int nuance(LArMCParticleHelper::GetNuanceCode(pMCParticle));
