@@ -24,6 +24,7 @@ namespace lar_content
 EventValidationAlgorithm::EventValidationAlgorithm() :
     m_useTrueNeutrinosOnly(false),
     m_testBeamMode(false),
+    m_testBeamHierarchyMode(false),
     m_selectInputHits(true),
     m_minHitSharingFraction(0.9f),
     m_maxPhotonPropagation(2.5f),
@@ -102,6 +103,7 @@ void EventValidationAlgorithm::FillValidationInfo(const MCParticleList *const pM
         LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsBeamNeutrinoFinalState, targetMCParticleToHitsMap);
         if (!m_useTrueNeutrinosOnly) LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsBeamParticle, targetMCParticleToHitsMap);
         if (!m_useTrueNeutrinosOnly) LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsCosmicRay, targetMCParticleToHitsMap);
+        if (m_testBeamHierarchyMode) LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsTestBeamFinalState, targetMCParticleToHitsMap);
 
         parameters.m_minPrimaryGoodHits = 0;
         parameters.m_minHitsForGoodView = 0;
@@ -110,6 +112,7 @@ void EventValidationAlgorithm::FillValidationInfo(const MCParticleList *const pM
         LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsBeamNeutrinoFinalState, allMCParticleToHitsMap);
         if (!m_useTrueNeutrinosOnly) LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsBeamParticle, allMCParticleToHitsMap);
         if (!m_useTrueNeutrinosOnly) LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsCosmicRay, allMCParticleToHitsMap);
+        if (m_testBeamHierarchyMode) LArMCParticleHelper::SelectReconstructableMCParticles(pMCParticleList, pCaloHitList, parameters, LArMCParticleHelper::IsTestBeamFinalState, allMCParticleToHitsMap);
 
         validationInfo.SetTargetMCParticleToHitsMap(targetMCParticleToHitsMap);
         validationInfo.SetAllMCParticleToHitsMap(allMCParticleToHitsMap);
@@ -123,7 +126,7 @@ void EventValidationAlgorithm::FillValidationInfo(const MCParticleList *const pM
         PfoList finalStatePfos;
         for (const ParticleFlowObject *const pPfo : allConnectedPfos)
         {
-            if ((!m_testBeamMode && LArPfoHelper::IsFinalState(pPfo)) || (m_testBeamMode && pPfo->GetParentPfoList().empty()))
+            if ((!m_testBeamMode && LArPfoHelper::IsFinalState(pPfo)) || (m_testBeamMode && pPfo->GetParentPfoList().empty()) || (m_testBeamHierarchyMode && LArPfoHelper::IsTestBeamModeDaughter(pPfo)))
                 finalStatePfos.push_back(pPfo);
         }
 

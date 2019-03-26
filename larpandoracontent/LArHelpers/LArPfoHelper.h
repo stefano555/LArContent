@@ -223,6 +223,15 @@ public:
      */
     static bool IsFinalState(const pandora::ParticleFlowObject *const pPfo);
 
+    /**
+     *  @brief  Whether a pfo is a daughter of a primart parent particle
+     *
+     *  @param  pPfo the address of the Pfo
+     *
+     *  @return boolean
+     */
+    static bool IsTestBeamModeDaughter(const pandora::ParticleFlowObject *const pPfo);
+
      /**
      *  @brief  Whether a pfo is a final-state particle from a neutrino (or antineutrino) interaction
      *

@@ -56,7 +56,7 @@ bool LArMCParticleHelper::IsTestBeamFinalState(const pandora::MCParticle *const 
 
     const MCParticle *const pParentMCParticle(LArMCParticleHelper::GetParentMCParticle(pMCParticle));
     const int parentNuance(LArMCParticleHelper::GetNuanceCode(pParentMCParticle));
-    const bool isDaughter(!pParentMCParticle->GetParentList.empty() && (parentNuance == 2001));
+    const bool isDaughter(!pParentMCParticle->GetParentList().empty() && (parentNuance == 2001));
 
     return (isParent || isDaughter);
 }

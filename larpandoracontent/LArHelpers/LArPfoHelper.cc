@@ -355,6 +355,25 @@ bool LArPfoHelper::IsFinalState(const ParticleFlowObject *const pPfo)
 
 //------------------------------------------------------------------------------------------------------------------------------------------
 
+bool LArPfoHelper::IsTestBeamModeDaughter(const ParticleFlowObject *const pPfo)
+{
+    if (!LArPfoHelper::IsTestBeam(LArPfoHelper::GetParentPfo(pPfo)))
+        return false;
+        
+    // ATTN: Throw exception?
+    if (pPfo->GetParentPfoList().size() == 1)
+        return false;
+
+    const ParticleFlowObject *pParent(pPfo->GetParentPfoList().front());
+
+    if (pParent->GetParentPfoList().empty())
+	return true;
+
+    return false;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
 bool LArPfoHelper::IsNeutrinoFinalState(const ParticleFlowObject *const pPfo)
 {
     return ((pPfo->GetParentPfoList().size() == 1) && (LArPfoHelper::IsNeutrino(*(pPfo->GetParentPfoList().begin()))));
